@@ -88,7 +88,7 @@ def print_menu_options():
     options = [
         ("1", "📅 Planned Occupation Date", "Atualiza datas de ocupação planejada", Colors.BRIGHT_GREEN),
         ("2", "👤 To Be Hired", "Ativa o campo To Be Hired no EC     ", Colors.BRIGHT_YELLOW),
-        ("3", "📅 Data da Mudança", "Alterar data efetiva da mudança     ", Colors.BRIGHT_BLUE),
+        ("3", "🔮 Data da Mudança", "Alterar data efetiva da mudança     ", Colors.BRIGHT_BLUE),
         ("4", "📁 Abrir Arquivo Config", "Abre arquivo Excel                  ", Colors.BRIGHT_MAGENTA),
         ("0", "🚪 Sair", "Encerra a aplicação                 ", Colors.BRIGHT_RED)
     ]
@@ -102,6 +102,8 @@ def print_menu_options():
 
     # Mostrar data atual configurada
     print(f"\n{Colors.DIM}📅 Data de mudança atual: {Colors.BOLD}{getChangeDate()}{Colors.RESET}")
+    print(f"\n{Colors.DIM}🌎 Idioma atual: {Colors.BOLD}{LANGUAGE}{Colors.RESET}")
+
 
 
 def print_info_box():
