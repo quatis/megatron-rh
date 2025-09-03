@@ -12,6 +12,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXCEL_PATH = os.path.join(BASE_DIR, "..","Config.xlsx")
 URL = "https://performancemanager5.successfactors.eu/sf/orgchart?type=position&bplte_company=StraumannPROD"
 changeDate = getChangeDate()
+df = pd.read_excel(EXCEL_PATH)
+totalPositions = len(df)
 
 def copiarTexto(delay=0.5):
     bot.hotkey("ctrl", "a")
@@ -149,7 +151,7 @@ for index, row in df.iterrows():
     totalTime = positionEndTime - positionStartTime
     pminutos, psegundos = divmod(totalTime, 60)
     contador += 1
-    print(f"Processada position n° {contador}: {position}")
+    print(f"Processada position n° {contador}/{totalPositions}: {position}")
     print(f"Tempo: {int(pminutos)} minutos e {int(psegundos)} segundos.")
 
     time.sleep(3)
