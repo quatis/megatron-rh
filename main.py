@@ -72,7 +72,7 @@ def print_header():
     print("║" + " " * 60 + "║")
     print("║" + f"{'SuccessFactors  R O B O T I Z A D O ':^60}" + "║")
     print("║" + " " * 60 + "║")
-    print("║" + f"{'      👾  M E G A T R O N   D O   R H  👾    ':^58}" + "║")
+    print("║" + f"{'     👾  M E G A T R O N   D O   R H  👾    ':^58}" + "║")
     print("║" + " " * 60 + "║")
     print("╚" + "═" * 60 + "╝")
     print(f"{Colors.RESET}")
