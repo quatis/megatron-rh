@@ -3,13 +3,13 @@ import os
 import sys
 from datetime import datetime, date
 import time
+from time import strftime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+EXCEL_PATH = os.path.join(BASE_DIR, "Config.xlsx")
 
+changeDate = datetime.today().strftime('%d/%m/%Y')
 LANGUAGE = "EN"
-changeDate = date.today()
-
-
 class Colors:
     """style"""
     RESET = '\033[0m'
@@ -47,14 +47,6 @@ class Colors:
     BG_WHITE = '\033[47m'
 
 
-
-def getChangeDate():
-    """data formatada conforme o idioma do EC"""
-    global changeDate, LANGUAGE
-    if LANGUAGE == "PT":
-        return changeDate.strftime("%d/%m/%Y")
-    else:  # EN
-        return changeDate.strftime("%m/%d/%Y")
 
 
 def clear_screen():
@@ -101,7 +93,7 @@ def print_menu_options():
         f"{Colors.BRIGHT_CYAN}└───────────────────────────────────────────────────────────────────────┘{Colors.RESET}")
 
     # Mostrar data atual configurada
-    print(f"\n{Colors.DIM}📅 Data de mudança atual: {Colors.BOLD}{getChangeDate()}{Colors.RESET}")
+    print(f"\n{Colors.DIM}📅 Data de mudança atual: {Colors.BOLD}{changeDate}{Colors.RESET}")
     print(f"\n{Colors.DIM}🌎 Idioma atual: {Colors.BOLD}{LANGUAGE}{Colors.RESET}")
 
 
@@ -141,8 +133,7 @@ def configure_change_date():
             break
         else:
             print(f"{Colors.BRIGHT_RED}❌ Opção inválida! Digite 1 ou 2.{Colors.RESET}")
-
-    print(f"\n{Colors.BRIGHT_GREEN}📅 Data atual configurada: {Colors.BOLD}{getChangeDate()}{Colors.RESET}")
+    print(f"\n{Colors.BRIGHT_GREEN}📅 Data atual configurada: {Colors.BOLD}{changeDate}{Colors.RESET}")
     print(f"{Colors.DIM}Esta data será usada como data efetiva nos processos{Colors.RESET}")
     print(f"\n{Colors.BRIGHT_WHITE}Opções:{Colors.RESET}")
     print(f"{Colors.BRIGHT_CYAN}1{Colors.RESET} - Usar data de hoje ({date.today().strftime('%d/%m/%Y')})")
@@ -155,8 +146,8 @@ def configure_change_date():
         if choice == "0":
             return
         elif choice == "1":
-            changeDate = date.today()
-            print(f"{Colors.BRIGHT_GREEN}✅ Data alterada para hoje: {getChangeDate()}{Colors.RESET}")
+            changeDate = date.today().strftime("%m/%d/%Y") if LANGUAGE == "EN" else date.today().strftime("%d/%m/%Y")
+            print(f"{Colors.BRIGHT_GREEN}✅ Data alterada para hoje: {changeDate}{Colors.RESET}")
             break
         elif choice == "2":
             print(f"\n{Colors.BRIGHT_YELLOW}📝 Digite a nova data (formato: dd/mm/yyyy):{Colors.RESET}")
@@ -171,15 +162,15 @@ def configure_change_date():
 
                 try:
                     # Valida a data
-                    changeDate = datetime.strptime(new_date, '%d/%m/%Y').date()
-                    print(f"{Colors.BRIGHT_GREEN}✅ Data alterada para: {getChangeDate()}{Colors.RESET}")
+                    parsedDate = datetime.strptime(new_date, '%d/%m/%Y')
+                    changeDate = parsedDate.strftime("%m/%d/%Y") if LANGUAGE == "EN" else parsedDate.strftime("%d/%m/%Y")
+                    print(f"{Colors.BRIGHT_GREEN}✅ Data alterada para: {changeDate}{Colors.RESET}")
                     break
                 except ValueError:
                     print(f"{Colors.BRIGHT_RED}❌ Data inválida! Use o formato dd/mm/yyyy{Colors.RESET}")
             break
         else:
             print(f"{Colors.BRIGHT_RED}❌ Opção inválida! Digite 0, 1 ou 2{Colors.RESET}")
-
     input(f"\n{Colors.DIM}Pressione Enter para continuar...{Colors.RESET}")
 
 
@@ -239,14 +230,16 @@ def run_script(script_name, script_description, script_emoji):
     # Mostrar timestamp de início
     start_time = datetime.now()
     print(f"{Colors.DIM}Iniciado em: {start_time.strftime('%d/%m/%Y %H:%M:%S')}{Colors.RESET}")
-    print(f"{Colors.DIM}Data de mudança: {getChangeDate()}{Colors.RESET}\n")
+    print(f"{Colors.DIM}Data de mudança: {changeDate}{Colors.RESET}\n")
 
     try:
         # Executar o script
         script_path = os.path.join(BASE_DIR, "script", script_name)
+        env = os.environ.copy()
+        env["CHANGE_DATE"] = str(changeDate)
+        env["LANGUAGE"] = LANGUAGE
         result = subprocess.run([sys.executable, script_path],
-                                capture_output=False, text=True)
-
+                                capture_output=False, text=True, env=env)
         end_time = datetime.now()
         duration = end_time - start_time
 

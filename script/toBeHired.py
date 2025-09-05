@@ -1,3 +1,4 @@
+from datetime import date
 import pyautogui as bot
 import time
 import pandas as pd
@@ -5,15 +6,20 @@ import webbrowser
 import sys
 import os
 import pyperclip
-from __main__ import getChangeDate
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXCEL_PATH = os.path.join(BASE_DIR, "..","Config.xlsx")
 URL = "https://performancemanager5.successfactors.eu/sf/orgchart?type=position&bplte_company=StraumannPROD"
-changeDate = getChangeDate()
 df = pd.read_excel(EXCEL_PATH)
 totalPositions = len(df)
+changeDate = os.environ.get("CHANGE_DATE")
+LANGUAGE = os.environ.get("LANGUAGE", "EN")
+if not changeDate:
+    today = date.today()
+    changeDate = today.strftime("%m/%d/%Y") if LANGUAGE == "EN" else today.strftime("%d/%m/%Y")
 
+def setChangeDate(changeDate):
+    changeDate = changeDate
 def copiarTexto(delay=0.5):
     bot.hotkey("ctrl", "a")
     time.sleep(0.2)

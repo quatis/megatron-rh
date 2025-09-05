@@ -1,19 +1,23 @@
 import pyautogui as bot
+from datetime import date
 import time
 import pandas as pd
 import webbrowser
 import sys
 import os
 import pyperclip
-from __main__ import getChangeDate
-
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXCEL_PATH = os.path.join(BASE_DIR, "..","Config.xlsx")
 URL = "https://performancemanager5.successfactors.eu/sf/orgchart?type=position&bplte_company=StraumannPROD"
-changeDate = getChangeDate()
 df = pd.read_excel(EXCEL_PATH)
 totalPositions = len(df)
+changeDate = os.environ.get("CHANGE_DATE")
+LANGUAGE = os.environ.get("LANGUAGE", "EN")
+if not changeDate:
+    today = date.today()
+    changeDate = today.strftime("%m/%d/%Y") if LANGUAGE == "EN" else today.strftime("%d/%m/%Y")
 
 def copiarTexto(delay=0.5):
     bot.hotkey("ctrl", "a")
@@ -92,7 +96,7 @@ for index, row in df.iterrows():
     time.sleep(3)
     bot.press('tab', presses=11)
     bot.press('enter')
-    time.sleep(3)
+    time.sleep(1.5)
     texto = copiarTexto()
     if "as of today" in texto:
         print("Card OK")
@@ -102,13 +106,13 @@ for index, row in df.iterrows():
     time.sleep(0.5)
     bot.press('tab')
     bot.press('enter')
-    time.sleep(3)
+    time.sleep(1.5)
 
     bot.press('enter')
     bot.sleep(1)
     bot.hotkey("ctrl", "a")
     bot.write(changeDate)
-    time.sleep(1)
+    time.sleep(1.5)
     bot.press('tab')
     texto = copiarTexto()
     if "insert new changes for position:" in texto:
@@ -124,19 +128,14 @@ for index, row in df.iterrows():
     else:
         print("Texto nao encontrado - edicao, encerrando.")
         sys.exit(1)
-
+    time.sleep(1)
     bot.press('tab', presses=13)
     bot.write(pd.to_datetime(row["Planned Occupation Date"]).strftime("%m/%d/%Y"))
+    time.sleep(0.1)
     bot.press('tab', presses=67)
-    texto = copiarTexto()
-    if "updated by" not in texto:
-        print("Final não encontrado - encerrando.")
-        sys.exit(1)
     time.sleep(0.2)
     bot.press('enter')
     time.sleep(3)
-
-#Tratamento de pop-ups no momento de salvar.
 
     resultadoPopUps = tratar_popups(position)
 
