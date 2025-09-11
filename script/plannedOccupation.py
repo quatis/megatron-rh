@@ -6,6 +6,7 @@ import webbrowser
 import sys
 import os
 import pyperclip
+import re
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -25,6 +26,10 @@ def copiarTexto(delay=0.5):
     bot.hotkey("ctrl", "c")
     time.sleep(delay)
     return pyperclip.paste().replace("\n", " ").replace("\r", " ").replace("\t", " ").lower()
+
+def checkJobFamily(text: str) -> bool:
+    match = re.search(r"standard job sub-family\s+(.*?)\s+standard job title", text)
+    return bool(match and match.group(1).strip())
 
 def tratar_popups(position, max_retries=3):
     for tentativa in range(max_retries):
@@ -128,8 +133,9 @@ for index, row in df.iterrows():
     else:
         print("Texto nao encontrado - edicao, encerrando.")
         sys.exit(1)
+    jobFamily = checkJobFamily(texto)
     time.sleep(1)
-    bot.press('tab', presses=13)
+    bot.press('tab', presses=13 if jobFamily else 12)
     bot.write(pd.to_datetime(row["Planned Occupation Date"]).strftime("%m/%d/%Y"))
     time.sleep(0.1)
     bot.press('tab', presses=67)

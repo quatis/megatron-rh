@@ -6,6 +6,7 @@ import webbrowser
 import sys
 import os
 import pyperclip
+import re
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXCEL_PATH = os.path.join(BASE_DIR, "..","Config.xlsx")
@@ -17,6 +18,10 @@ LANGUAGE = os.environ.get("LANGUAGE", "EN")
 if not changeDate:
     today = date.today()
     changeDate = today.strftime("%m/%d/%Y") if LANGUAGE == "EN" else today.strftime("%d/%m/%Y")
+
+def checkJobFamily(text: str) -> bool:
+    match = re.search(r"standard job sub-family\s+(.*?)\s+standard job title", text)
+    return bool(match and match.group(1).strip())
 
 def setChangeDate(changeDate):
     changeDate = changeDate
@@ -122,12 +127,14 @@ for index, row in df.iterrows():
     else:
         print("Texto nao encontrado - edicao, encerrando.")
         sys.exit(1)
-
-    bot.press('tab', presses=18)
+    jobFamily = checkJobFamily(texto)
+    time.sleep(1)
+    bot.press('tab', presses=18 if jobFamily else 17)
     bot.press('enter')
     bot.press('down', presses=2)
     bot.press('enter')
     bot.press('tab', presses=62)
+    bot.press('enter')
     texto = copiarTexto()
     if "updated by" not in texto:
         print("Final não encontrado - encerrando.")
