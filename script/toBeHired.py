@@ -20,7 +20,7 @@ if not changeDate:
     changeDate = today.strftime("%m/%d/%Y") if LANGUAGE == "EN" else today.strftime("%d/%m/%Y")
 
 def checkJobFamily(text: str) -> bool:
-    match = re.search(r"standard job sub-family\s+(.*?)\s+standard job title", text)
+    match = re.search(r"standard job title\s+(.*?)\s+work level", text)
     return bool(match and match.group(1).strip())
 
 def setChangeDate(changeDate):

@@ -15,8 +15,6 @@ class Colors:
     RESET = '\033[0m'
     BOLD = '\033[1m'
     DIM = '\033[2m'
-
-    # Cores básicas
     BLACK = '\033[30m'
     RED = '\033[31m'
     GREEN = '\033[32m'
@@ -25,8 +23,6 @@ class Colors:
     MAGENTA = '\033[35m'
     CYAN = '\033[36m'
     WHITE = '\033[37m'
-
-    # Cores brilhantes
     BRIGHT_BLACK = '\033[90m'
     BRIGHT_RED = '\033[91m'
     BRIGHT_GREEN = '\033[92m'
@@ -35,8 +31,6 @@ class Colors:
     BRIGHT_MAGENTA = '\033[95m'
     BRIGHT_CYAN = '\033[96m'
     BRIGHT_WHITE = '\033[97m'
-
-    # Backgrounds
     BG_BLACK = '\033[40m'
     BG_RED = '\033[41m'
     BG_GREEN = '\033[42m'
@@ -45,9 +39,6 @@ class Colors:
     BG_MAGENTA = '\033[45m'
     BG_CYAN = '\033[46m'
     BG_WHITE = '\033[47m'
-
-
-
 
 def clear_screen():
     """Limpa a tela do console"""
@@ -60,11 +51,11 @@ def print_header():
     print(f"{Colors.CYAN}{Colors.BOLD}")
     print("╔" + "═" * 60 + "╗")
     print("║" + " " * 60 + "║")
-    print("║" + f"{'🤖 ROBOZINHO AUTOMATION SUITE 🤖':^58}" + "║")
+    #print("║" + f"{'🤖 ROBOZINHO AUTOMATION SUITE 🤖':^58}" + "║")
+    #print("║" + " " * 60 + "║")
+    print("║" + f"{'👾 our.success  A U T O M A T I Z A D O 👾 ':^58}" + "║")
     print("║" + " " * 60 + "║")
-    print("║" + f"{'SuccessFactors  R O B O T I Z A D O ':^60}" + "║")
-    print("║" + " " * 60 + "║")
-    print("║" + f"{'     👾  M E G A T R O N   D O   R H  👾    ':^58}" + "║")
+    print("║" + f"{'     🤖  R O B O Z I N H O   D O   R H  🤖    ':^58}" + "║")
     print("║" + " " * 60 + "║")
     print("╚" + "═" * 60 + "╝")
     print(f"{Colors.RESET}")

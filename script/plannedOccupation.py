@@ -1,5 +1,5 @@
 import pyautogui as bot
-from datetime import date
+from datetime import datetime, date
 import time
 import pandas as pd
 import webbrowser
@@ -11,16 +11,22 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXCEL_PATH = os.path.join(BASE_DIR, "..","Config.xlsx")
+LOG_PATH = os.path.join(BASE_DIR, "..","log.xlsx")
 URL = "https://performancemanager5.successfactors.eu/sf/orgchart?type=position&bplte_company=StraumannPROD"
 df = pd.read_excel(EXCEL_PATH)
 totalPositions = len(df)
 changeDate = os.environ.get("CHANGE_DATE")
 LANGUAGE = os.environ.get("LANGUAGE", "EN")
+if os.path.exists(LOG_PATH):
+    df_log = pd.read_excel(LOG_PATH)
+else:
+    df_log = pd.DataFrame(columns=["Position", "DataHora"])
 if not changeDate:
     today = date.today()
     changeDate = today.strftime("%m/%d/%Y") if LANGUAGE == "EN" else today.strftime("%d/%m/%Y")
 
 def copiarTexto(delay=0.5):
+    time.sleep(delay)
     bot.hotkey("ctrl", "a")
     time.sleep(0.2)
     bot.hotkey("ctrl", "c")
@@ -28,7 +34,7 @@ def copiarTexto(delay=0.5):
     return pyperclip.paste().replace("\n", " ").replace("\r", " ").replace("\t", " ").lower()
 
 def checkJobFamily(text: str) -> bool:
-    match = re.search(r"standard job sub-family\s+(.*?)\s+standard job title", text)
+    match = re.search(r"standard job title\s+(.*?)\s+work level", text)
     return bool(match and match.group(1).strip())
 
 def tratar_popups(position, max_retries=3):
@@ -37,7 +43,7 @@ def tratar_popups(position, max_retries=3):
             texto = copiarTexto()
 
             # Primeiro pop-up: Changes were propagated
-            if "changes were propagated forward to future records." in texto:
+            if ("changes were propagated forward") in texto:
                 bot.press('esc')
                 print(f"Pop-up de mudança futura detectado e fechado na position: {position}")
                 time.sleep(2)
@@ -101,7 +107,7 @@ for index, row in df.iterrows():
     time.sleep(3)
     bot.press('tab', presses=11)
     bot.press('enter')
-    time.sleep(1.5)
+    time.sleep(2)
     texto = copiarTexto()
     if "as of today" in texto:
         print("Card OK")
@@ -114,10 +120,10 @@ for index, row in df.iterrows():
     time.sleep(1.5)
 
     bot.press('enter')
-    bot.sleep(1)
-    bot.hotkey("ctrl", "a")
-    bot.write(changeDate)
-    time.sleep(1.5)
+    bot.sleep(1.5)
+    #bot.hotkey("ctrl", "a")
+    #bot.write(changeDate)
+    #time.sleep(1.5)
     bot.press('tab')
     texto = copiarTexto()
     if "insert new changes for position:" in texto:
@@ -144,7 +150,7 @@ for index, row in df.iterrows():
     time.sleep(3)
 
     resultadoPopUps = tratar_popups(position)
-
+    time.sleep(0.5)
     if resultadoPopUps == "error":
         print(f"Erro ao verificar pop-ups na position: {position}. Encerrando script.")
         sys.exit(1)
@@ -158,6 +164,9 @@ for index, row in df.iterrows():
     contador += 1
     print(f"Processada position n° {contador}/{totalPositions}: {position}")
     print(f"Tempo: {int(pminutos)} minutos e {int(psegundos)} segundos.")
+    data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    df_log.loc[len(df_log)] = [position, data_hora]
+    df_log.to_excel(LOG_PATH, index=False)
 
     time.sleep(3)
     bot.click(462, 221)
