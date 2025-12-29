@@ -81,6 +81,13 @@ def tratar_popups(position, max_retries=3):
             time.sleep(1)
             print(f"Falha ao processar pop-ups após {max_retries} tentativas")
             return "error"
+def validarTexto(expected, max_retries=3, delay=1):
+    for tentativa in range(max_retries):
+        texto = copiarTexto()
+        if expected.lower() in texto:
+            return True
+        time.sleep(delay)
+    return False
 
 bot.PAUSE = 0.5
 bot.FAILSAFE = True
@@ -108,38 +115,33 @@ for index, row in df.iterrows():
     bot.press('tab', presses=11)
     bot.press('enter')
     time.sleep(2)
-    texto = copiarTexto()
-    if "as of today" in texto:
-        print("Card OK")
-    else:
-        print("Card não encontrado - encerrando.")
+    if not validarTexto("as of today"):
+        print("Card não encontrado após 3 tentativas - encerrando.")
         sys.exit(1)
+    print("Card OK")
     time.sleep(0.5)
     bot.press('tab')
     bot.press('enter')
     time.sleep(1.5)
-
     bot.press('enter')
-    bot.sleep(1.5)
+    bot.sleep(1)
+    bot.press('enter')
+    bot.sleep(0.5)
     #bot.hotkey("ctrl", "a")
     #bot.write(changeDate)
     #time.sleep(1.5)
     bot.press('tab')
-    texto = copiarTexto()
-    if "insert new changes for position:" in texto:
-        print("Tela de confirmacao OK")
-    else:
-        print("Texto não encontrado - confirmacao, encerrando.")
+    if not validarTexto("insert new changes for position:"):
+        print("Tela de confirmacao não encontrada após 3 tentativas - encerrando.")
         sys.exit(1)
+    print("Tela de confirmacao OK")
     bot.press('enter')
     time.sleep(3)
-    texto = copiarTexto()
-    if "planned occupation date" in texto:
-        print("Tela de edicao OK")
-    else:
-        print("Texto nao encontrado - edicao, encerrando.")
+    if not validarTexto("planned occupation date"):
+        print("Tela de edicao não encontrada após 3 tentativas - encerrando.")
         sys.exit(1)
-    jobFamily = checkJobFamily(texto)
+    print("Tela de edicao OK")
+    jobFamily = checkJobFamily(copiarTexto())
     time.sleep(1)
     bot.press('tab', presses=13 if jobFamily else 12)
     bot.write(pd.to_datetime(row["Planned Occupation Date"]).strftime("%m/%d/%Y"))
@@ -147,8 +149,7 @@ for index, row in df.iterrows():
     bot.press('tab', presses=67)
     time.sleep(0.2)
     bot.press('enter')
-    time.sleep(3)
-
+    time.sleep(4)
     resultadoPopUps = tratar_popups(position)
     time.sleep(0.5)
     if resultadoPopUps == "error":
